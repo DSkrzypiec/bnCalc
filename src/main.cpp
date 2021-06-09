@@ -1,15 +1,9 @@
 #include<iostream>
+#include <string>
 #include "BigInt.h"
+#include "repl.h"
 
 int main() {
-    std::cout << "BigNumCalculator by DSkrzypiec" << std::endl;
-    std::cout << "Pass a number..." << std::endl;
-
-    std::string input;
-    std::cin >> input;
-
-    bigNumCalculator::BigInt<128> x(input);
-    x.print();
-
-    return 0;
+    bigNumCalculator::repl::startup_message();
+    bigNumCalculator::repl::run_repl();
 }
