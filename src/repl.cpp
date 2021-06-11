@@ -1,5 +1,6 @@
 #include<iostream>
 #include "repl.h"
+#include "Scanner.h"
 
 namespace bigNumCalculator {
 namespace repl {
@@ -26,12 +27,39 @@ void run_repl() {
 
         if (line == HELP_CMD) {
             show_help();
+            continue;
         }
 
-        // parse
-        // eval
-        // print
-        std::cout << "Your words: " << line << std::endl; // TODO
+        // TODO: Temp hack for fast testing
+        // This part will be placed inside the parser
+        Scanner scanner(line);
+
+        for (;;) {
+            auto word = scanner.scan();
+
+            if (word.token == Token::END) {
+                std::cout << "END" << std::endl;
+                break;
+            }
+
+            if (word.token == Token::INT) {
+                std::cout << "Got INT: " <<
+                    std::string(word.word.begin(), word.word.end()) << std::endl;
+            }
+
+            if (word.token == Token::ADD) {
+                std::cout << "Got ADD: + " << std::endl;
+            }
+
+            if (word.token == Token::MUL) {
+                std::cout << "Got MUL: * " << std::endl;
+            }
+
+            if (word.token == Token::ILLEGAL) {
+                std::cout << "ILLEGAL!: " << word.word[0] << std::endl;
+                break;
+            }
+        }
     }
 }
 
