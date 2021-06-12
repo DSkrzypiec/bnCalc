@@ -23,7 +23,7 @@ private:
     void next();
     char peek();
     void skip_whitespace();
-    std::vector<char> scan_number();
+    Word scan_number();
 
 public:
     Scanner(const std::string& content);

@@ -40,30 +40,41 @@ Word Scanner::scan() {
     }
 
     if (std::isdigit(_current)) {
-        auto number = scan_number();
-        return Word{Token::INT, number};
+        return scan_number();
     }
 
     return Word{Token::ILLEGAL, std::vector<char> { _current }};
 }
 
-std::vector<char> Scanner::scan_number() {
-    // TODO: Only integeres are handeled now
+Word Scanner::scan_number() {
     auto start_position = _offset;
+    auto prev_char = _current;
+    auto token = Token::INT;
 
     for (;;) {
         next();
 
-        if (!std::isdigit(_current)) {
+        if (!std::isdigit(_current) && _current != '.' && _current != 'e'
+                && _current != 'E' && _current != '+' && _current != '-') {
             break;
         }
+
+        if (_current == '.') {
+            token = Token::REAL;
+        }
+
+        if ((_current == '+' || _current == '-') && (prev_char != 'e' || prev_char != 'E')) {
+            break;
+        }
+
+        prev_char = _current;
     }
 
     auto start = _source.begin() + start_position;
     auto end = _source.begin() + _offset;
     std::vector<char> number(start, end);
 
-    return number;
+    return Word{token, number};
 }
 
 void Scanner::next() {
