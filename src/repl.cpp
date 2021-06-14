@@ -36,29 +36,20 @@ void run_repl() {
 
         for (;;) {
             auto word = scanner.scan();
+            auto token_str = TokenStrings[word.token];
 
             if (word.token == Token::END) {
                 std::cout << "END" << std::endl;
                 break;
             }
 
-            if (word.token == Token::INT) {
-                std::cout << "Got INT: " <<
-                    std::string(word.word.begin(), word.word.end()) << std::endl;
-            }
-
-            if (word.token == Token::ADD) {
-                std::cout << "Got ADD: + " << std::endl;
-            }
-
-            if (word.token == Token::MUL) {
-                std::cout << "Got MUL: * " << std::endl;
-            }
-
             if (word.token == Token::ILLEGAL) {
                 std::cout << "ILLEGAL!: " << word.word[0] << std::endl;
                 break;
             }
+
+            std::cout << token_str << ": " <<
+                std::string(word.word.begin(), word.word.end()) << std::endl;
         }
     }
 }
