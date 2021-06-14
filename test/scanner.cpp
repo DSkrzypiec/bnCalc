@@ -50,6 +50,37 @@ TEST(scan_number, big_int) {
     EXPECT_EQ(number_word.word, expected);
 }
 
+TEST(scan_number, big_real) {
+    std::string big_real("2139192391283912831293.9812391929392999319293912939192391923919391923128381283");
+    Scanner s(big_real);
+    auto number_word = s.scan();
+    std::vector<char> expected(big_real.begin(), big_real.end());
+
+    EXPECT_EQ(number_word.token, Token::REAL);
+    EXPECT_EQ(number_word.word, expected);
+}
+
+TEST(scan_number, sci_notation) {
+    std::string number("1.9955e123");
+    Scanner s(number);
+    auto number_word = s.scan();
+    std::vector<char> expected = { '1', '.', '9', '9', '5', '5', 'e', '1', '2', '3' };
+
+    EXPECT_EQ(number_word.token, Token::REAL);
+    EXPECT_EQ(number_word.word, expected);
+}
+
+
+TEST(scan_number, sci_notation_capital) {
+    std::string number("1.9955E123");
+    Scanner s(number);
+    auto number_word = s.scan();
+    std::vector<char> expected = { '1', '.', '9', '9', '5', '5', 'E', '1', '2', '3' };
+
+    EXPECT_EQ(number_word.token, Token::REAL);
+    EXPECT_EQ(number_word.word, expected);
+}
+
 TEST(scan_number_op_number, basic) {
     Scanner s("42 + 7");
     std::vector<Word> words = { s.scan(), s.scan(), s.scan() };
@@ -81,5 +112,32 @@ TEST(scan_number_op_number, basic_without_whitespace) {
     for (auto i = 0; i < 3; i++) {
         EXPECT_EQ(words[i].token, expTokens[i]);
         EXPECT_EQ(words[i].word, exps[i]);
+    }
+}
+
+TEST(complex_expression, basic) {
+    Scanner s("(42    + 7)* 0.2 ^ 3.5e10");
+    std::vector<Word> words;
+
+    for (auto i = 0; i < 100; i++) {
+        auto word = s.scan();
+
+        if (word.token == Token::END) {
+            break;
+        }
+
+        words.push_back(word);
+    }
+
+    std::vector<Token> expTokens = {
+        Token::LPARENT, Token::INT, Token::ADD, Token::INT,
+        Token::RPARENT, Token::MUL, Token::REAL, Token::POWER,
+        Token::REAL
+    };
+
+    EXPECT_EQ(words.size(), expTokens.size());
+
+    for (int i = 0; i < (int)expTokens.size(); i++) {
+        EXPECT_EQ(expTokens[i], words[i].token);
     }
 }
