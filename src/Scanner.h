@@ -21,7 +21,6 @@ private:
     int _offset = 0;
 
     void next();
-    char peek();
     void skip_whitespace();
     Word scan_number();
 

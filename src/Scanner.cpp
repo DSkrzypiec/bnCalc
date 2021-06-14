@@ -37,6 +37,15 @@ Word Scanner::scan() {
         case '%':
             next();
             return Word{Token::MOD, std::vector<char> { '%' }};
+        case '(':
+            next();
+            return Word{Token::LPARENT, std::vector<char> { '(' }};
+        case ')':
+            next();
+            return Word{Token::RPARENT, std::vector<char> { ')' }};
+        case '^':
+            next();
+            return Word{Token::POWER, std::vector<char> { '^' }};
     }
 
     if (std::isdigit(_current)) {
@@ -46,6 +55,8 @@ Word Scanner::scan() {
     return Word{Token::ILLEGAL, std::vector<char> { _current }};
 }
 
+// scan_number scans numbers - integers and real numbers. Real number can be
+// expressed in decimal or scientific notation.
 Word Scanner::scan_number() {
     auto start_position = _offset;
     auto prev_char = _current;
@@ -86,14 +97,6 @@ void Scanner::next() {
 
     _offset++;
     _current = _source[_offset];
-}
-
-char Scanner::peek() {
-    if (_offset + 1 < _source_size) {
-        return _source[_offset + 1];
-    }
-
-    return 0;
 }
 
 void Scanner::skip_whitespace() {
