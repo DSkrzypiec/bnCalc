@@ -1,3 +1,6 @@
+#ifndef SCANNER_H_
+#define SCANNER_H_
+
 #include <string>
 #include <vector>
 #include "tokens.h"
@@ -30,3 +33,5 @@ public:
 };
 
 } // bigNumCalculator namespace
+
+#endif // SCANNER_H_

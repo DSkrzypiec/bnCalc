@@ -1,3 +1,6 @@
+#ifndef BIG_INT_H_
+#define BIG_INT_H_
+
 #include<iostream>
 #include<string>
 #include<vector>
@@ -17,3 +20,5 @@ public:
     void print();
 };
 } // bigNumCalculator namespace
+
+#endif // BIG_INT_H_

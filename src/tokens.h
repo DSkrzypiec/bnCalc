@@ -1,3 +1,6 @@
+#ifndef TOKENS_H_
+#define TOKENS_H_
+
 #include <vector>
 #include <string>
 
@@ -48,3 +51,5 @@ static const std::vector<std::string> TokenStrings = {
 };
 
 } // bigNumCalculator namespace
+
+#endif // TOKENS_H_
