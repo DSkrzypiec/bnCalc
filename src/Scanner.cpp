@@ -1,6 +1,6 @@
-#include <iostream>
-#include <cctype>
 #include "Scanner.h"
+#include <cctype>
+#include <iostream>
 
 namespace bigNumCalculator {
 

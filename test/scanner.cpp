@@ -1,6 +1,6 @@
+#include "../src/Scanner.h"
 #include "gtest/gtest.h"
 #include <vector>
-#include "../src/Scanner.h"
 
 using namespace bigNumCalculator;
 

@@ -1,6 +1,6 @@
-#include<iostream>
 #include "repl.h"
 #include "Scanner.h"
+#include <iostream>
 
 namespace bigNumCalculator {
 namespace repl {
