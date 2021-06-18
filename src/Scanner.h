@@ -13,6 +13,9 @@ static const char EOFCHAR = -1;
 struct Word {
     Token token;
     std::vector<char> word;
+
+    Word(Token tok, std::vector<char> word) :
+        token(tok), word(word) { }
 };
 
 // Scanner scans one token at the time.
