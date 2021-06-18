@@ -1,6 +1,9 @@
+#include <iostream>
+#include <memory>
+#include <vector>
 #include "repl.h"
 #include "Scanner.h"
-#include <iostream>
+#include "Parser.h"
 
 namespace bigNumCalculator {
 namespace repl {
@@ -16,6 +19,7 @@ void startup_message() {
 
 void run_repl() {
     std::string line;
+    std::vector<std::unique_ptr<Word>> words;
 
     for (;;) {
         std::cout << REPL_CHAR;
@@ -33,13 +37,31 @@ void run_repl() {
         // TODO: Temp hack for fast testing
         // This part will be placed inside the parser
         Scanner scanner(line);
+        words.clear();
 
         for (;;) {
             auto word = scanner.scan();
             auto token_str = TokenStrings[word.token];
 
+            if (word.token != Token::END) {
+                words.push_back(std::make_unique<Word>(word));
+            }
+
             if (word.token == Token::END) {
-                std::cout << "END" << std::endl;
+                std::cout << "Words before parsing: [";
+                for (auto& w : words) {
+                    std::cout << TokenStrings[w->token] << " ";
+                }; std::cout << "]" << std::endl;
+
+                Parser parser;
+                auto tree = parser.parse(words);
+
+                if (tree.error != nullptr) {
+                    std::cout << "[Error] " << tree.error->message << std::endl;
+                    words.clear();
+                }
+
+                tree.result->print();
                 break;
             }
 
