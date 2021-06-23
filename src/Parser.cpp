@@ -41,7 +41,10 @@ void Parser::grow_tree(std::unique_ptr<Word>& word, Token op_token) {
     }
 
     // Move root as left child and update root
-    auto new_root = std::make_shared<AST>(_root, word, op_token);
+    _current_ast->rightNumber = std::move(word);
+
+    auto new_root = std::make_shared<AST>(op_token);
+    new_root->leftChild = _root;
     _root = new_root;
     _current_ast = new_root;
     _previous_op = op_token;

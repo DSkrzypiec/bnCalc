@@ -24,6 +24,10 @@ struct AST {
 
     AST() {}
 
+    AST(Token op_token)
+        : opToken(op_token), leftNumber(nullptr), rightNumber(nullptr),
+          leftChild(nullptr), rightChild(nullptr) {}
+
     AST(std::unique_ptr<Word>& word, Token op_token)
         : opToken(op_token), leftNumber(std::move(word)), rightNumber(nullptr),
           leftChild(nullptr), rightChild(nullptr) {}
