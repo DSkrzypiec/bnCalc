@@ -69,9 +69,6 @@ void run_repl() {
                 std::cout << "ILLEGAL!: " << word.word[0] << std::endl;
                 break;
             }
-
-            std::cout << token_str << ": " <<
-                std::string(word.word.begin(), word.word.end()) << std::endl;
         }
     }
 }
