@@ -21,21 +21,26 @@ struct AST {
     std::unique_ptr<Word> rightNumber;
     std::shared_ptr<AST> leftChild;
     std::shared_ptr<AST> rightChild;
+    std::shared_ptr<AST> parent;
 
     AST() {}
 
     AST(Token op_token)
         : opToken(op_token), leftNumber(nullptr), rightNumber(nullptr),
-          leftChild(nullptr), rightChild(nullptr) {}
+          leftChild(nullptr), rightChild(nullptr), parent(nullptr) {}
 
     AST(std::unique_ptr<Word>& word, Token op_token)
         : opToken(op_token), leftNumber(std::move(word)), rightNumber(nullptr),
-          leftChild(nullptr), rightChild(nullptr) {}
+          leftChild(nullptr), rightChild(nullptr), parent(nullptr) {}
 
     AST(std::shared_ptr<AST>& left_child, std::unique_ptr<Word>& word,
         Token op_token)
         : opToken(op_token), leftNumber(nullptr), rightNumber(std::move(word)),
-          leftChild(left_child), rightChild(nullptr) {}
+          leftChild(left_child), rightChild(nullptr), parent(nullptr) {}
+
+    AST(std::shared_ptr<AST>& parent, std::shared_ptr<AST>& left_child, Token op_token)
+        : opToken(op_token), leftNumber(nullptr), rightNumber(nullptr),
+          leftChild(left_child), rightChild(nullptr), parent(parent) {}
 
     void print(int indent = 0);
 };

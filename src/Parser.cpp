@@ -17,23 +17,12 @@ void Parser::grow_tree(std::unique_ptr<Word>& word, Token op_token) {
         return;
     }
 
-    if (TokenPrecedenceMap.find(op_token) == TokenPrecedenceMap.end()) {
-        std::cout << "There is no precedence for current token ["
-            << TokenStrings[op_token] << "]" << std::endl;
-        return;
-    }
-
-    if (TokenPrecedenceMap.find(_previous_op) == TokenPrecedenceMap.end()) {
-        std::cout << "There is no precedence for previous token ["
-            << TokenStrings[_previous_op] << "]" << std::endl;
-        return;
-    }
-
     int current_op_precedence = TokenPrecedenceMap.at(op_token);
     int previous_op_precedence = TokenPrecedenceMap.at(_previous_op);
 
     if (current_op_precedence <= previous_op_precedence) {
         _current_ast->rightChild = std::make_shared<AST>(word, op_token);
+        _current_ast->rightChild->parent = _current_ast;
         _current_ast = _current_ast->rightChild;
         _previous_op = op_token;
 
@@ -43,11 +32,41 @@ void Parser::grow_tree(std::unique_ptr<Word>& word, Token op_token) {
     // Move root as left child and update root
     _current_ast->rightNumber = std::move(word);
 
-    auto new_root = std::make_shared<AST>(op_token);
-    new_root->leftChild = _root;
-    _root = new_root;
-    _current_ast = new_root;
-    _previous_op = op_token;
+    for (;;) {
+        if (_current_ast != _root) {
+            _current_ast = _current_ast->parent;
+        }
+
+        auto curr_ast_token_precedence = TokenPrecedenceMap.at(_current_ast->opToken);
+
+        if (_current_ast == _root && current_op_precedence > curr_ast_token_precedence) {
+            auto new_root = std::make_shared<AST>(op_token);
+            new_root->leftChild = _root;
+            _root = new_root;
+            _current_ast = new_root;
+            _previous_op = op_token;
+
+            return;
+        }
+
+        if (_current_ast == _root && current_op_precedence <= curr_ast_token_precedence) {
+            auto new_tree = std::make_shared<AST>(_current_ast, _current_ast->rightChild, op_token);
+            _root->rightChild = new_tree;
+            _current_ast = _root->rightChild;
+            _previous_op = op_token;
+
+            return;
+        }
+
+        if (current_op_precedence >= curr_ast_token_precedence) {
+            auto new_tree = std::make_shared<AST>(_current_ast, _current_ast->rightChild, op_token);
+            _current_ast->rightChild = new_tree;
+            _current_ast = new_tree;
+            _previous_op = op_token;
+
+            return;
+        }
+    }
 }
 
 // Main parse method.

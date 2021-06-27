@@ -109,14 +109,14 @@ TEST(parse_two_op, add_mul) {
     EXPECT_EQ(vector_char_to_string(ast.result->rightChild->rightNumber->word), "5");
 }
 
-//         +
-//        / \
-//       /  111
 //      +
 //     / \
-//    42  *
+//    42  +
 //       / \
-//      11  5
+//      *  111
+//     / \
+//    /   \
+//   11    5
 //
 // 42 + 11 * 5 + 111
 TEST(parse_three_op, add_mul_add) {
@@ -145,21 +145,21 @@ TEST(parse_three_op, add_mul_add) {
     // Assert
     EXPECT_FALSE(ast.error);
     EXPECT_EQ(ast.result->opToken, Token::ADD);
-    EXPECT_EQ(ast.result->rightNumber->token, Token::INT);
-    EXPECT_EQ(vector_char_to_string(ast.result->rightNumber->word), "111");
+    EXPECT_EQ(ast.result->leftNumber->token, Token::INT);
+    EXPECT_EQ(vector_char_to_string(ast.result->leftNumber->word), "42");
 
-    EXPECT_TRUE(ast.result->leftChild);
+    EXPECT_TRUE(ast.result->rightChild);
 
-    auto left_ch = ast.result->leftChild;
-    EXPECT_EQ(left_ch->opToken, Token::ADD);
-    EXPECT_EQ(vector_char_to_string(left_ch->leftNumber->word), "42");
+    auto rc = ast.result->rightChild;
+    EXPECT_EQ(rc->opToken, Token::ADD);
+    EXPECT_EQ(vector_char_to_string(rc->rightNumber->word), "111");
 
-    auto left_right_ch = ast.result->leftChild->rightChild;
-    EXPECT_TRUE(left_right_ch);
-    EXPECT_EQ(left_right_ch->opToken, Token::MUL);
+    auto rlc = ast.result->rightChild->leftChild;
+    EXPECT_TRUE(rlc);
+    EXPECT_EQ(rlc->opToken, Token::MUL);
 
-    EXPECT_EQ(vector_char_to_string(left_right_ch->leftNumber->word), "11");
-    EXPECT_EQ(vector_char_to_string(left_right_ch->rightNumber->word), "5");
+    EXPECT_EQ(vector_char_to_string(rlc->leftNumber->word), "11");
+    EXPECT_EQ(vector_char_to_string(rlc->rightNumber->word), "5");
 }
 
 //           +
@@ -208,4 +208,59 @@ TEST(parse_three_op, mul_add_mul) {
     EXPECT_EQ(rc->opToken, Token::MUL);
     EXPECT_EQ(vector_char_to_string(rc->leftNumber->word), "5");
     EXPECT_EQ(vector_char_to_string(rc->rightNumber->word), "111");
+}
+
+//
+//              +
+//             / \
+//            /   \
+//           /     \
+//          1       "/"
+//                 /  \
+//                /    \
+//               ^      2
+//              / \
+//             /   \
+//           3.14 0.123
+//
+// 1 + 3.14^0.123 / 2
+TEST(parse_three_op, with_decimals) {
+    // Arrange
+    std::vector<std::unique_ptr<Word>> words;
+    auto num1 = std::make_unique<Word>(Token::INT, std::vector<char> { '1' });
+    auto add = std::make_unique<Word>(Token::ADD, std::vector<char> {});
+    auto pi = std::make_unique<Word>(Token::REAL, std::vector<char> { '3', '.', '1', '4' });
+    auto pow = std::make_unique<Word>(Token::POWER, std::vector<char> {});
+    auto num2 = std::make_unique<Word>(Token::REAL, std::vector<char> { '0', '.', '1', '2', '3' });
+    auto div = std::make_unique<Word>(Token::DIV, std::vector<char> {});
+    auto num3 = std::make_unique<Word>(Token::INT, std::vector<char> { '2' });
+
+    words.push_back(std::move(num1));
+    words.push_back(std::move(add));
+    words.push_back(std::move(pi));
+    words.push_back(std::move(pow));
+    words.push_back(std::move(num2));
+    words.push_back(std::move(div));
+    words.push_back(std::move(num3));
+
+    // Act
+    Parser parser;
+    auto ast = parser.parse(words);
+
+    // Assert
+    EXPECT_FALSE(ast.error);
+    EXPECT_EQ(ast.result->opToken, Token::ADD);
+
+    EXPECT_EQ(vector_char_to_string(ast.result->leftNumber->word), "1");
+    EXPECT_TRUE(ast.result->rightChild);
+
+    auto rc = ast.result->rightChild;
+    EXPECT_EQ(rc->opToken, Token::DIV);
+    EXPECT_EQ(vector_char_to_string(rc->rightNumber->word), "2");
+    EXPECT_TRUE(rc->leftChild);
+
+    auto rlc = rc->leftChild;
+    EXPECT_EQ(rlc->opToken, Token::POWER);
+    EXPECT_EQ(vector_char_to_string(rlc->leftNumber->word), "3.14");
+    EXPECT_EQ(vector_char_to_string(rlc->rightNumber->word), "0.123");
 }
