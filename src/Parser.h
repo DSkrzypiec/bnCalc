@@ -66,6 +66,11 @@ private:
     Token _previous_op;
     int _current_token_id;
 
+    void init_tree(std::unique_ptr<Word>& word, Token op_token);
+    void add_right_child(std::unique_ptr<Word>& word, Token op_token);
+    void add_root_right_child(Token op_token);
+    void add_root_left_child(Token op_token);
+    void add_and_move_current_left(Token op_token);
     void grow_tree(std::unique_ptr<Word>& word, Token op_token);
 public:
     ParsingResult parse(std::vector<std::unique_ptr<Word>>& words);
