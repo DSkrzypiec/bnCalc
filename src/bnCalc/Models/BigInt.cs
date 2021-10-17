@@ -34,7 +34,7 @@ namespace bnCalc.Models
             {
                 if (ch >= '0' && ch <= '9')
                 {
-                    digits.Add((byte)ch);
+                    digits.Add((byte)char.GetNumericValue(ch));
                 }
             }
 
