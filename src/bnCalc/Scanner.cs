@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
+using bnCalc.Models;
 
 namespace bnCalc
 {
-    /// <summary>
-    /// Word represents single scanned token with corresponding value.
-    ///</summary>
-    public record Word(Token Token, List<char>? Chars);
-
     public interface IScanner
     {
         List<Word> Scan();
